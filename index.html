@@ -1,847 +1,244 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+ body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-        .topnav {
-            height: 55px;
-            overflow: hidden;
-            background-color: Orange;
-        }
+.topnav {
+    height: 55px;
+    overflow: hidden;
+    background-color: Orange;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .topnav a {
-            float: left;
-            color: black;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
-        }
+.topnav button,
+.topnav input[type="range"] {
+    margin: 0 10px;
+    padding: 10px;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+}
 
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
+.topnav button {
+    background-color: #ddd;
+    color: black;
+    border-radius: 8px;
+}
 
-        .topnav a.active {
-            background-color: #04AA6D;
-            color: white;
-        }
+.topnav button:hover {
+    background-color: #ccc;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: calc(100vh - 55px); /* Adjust for topnav height */
+    overflow: hidden;
+}
+
+#flipbook-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 80%;
+    height: auto;
+    position: relative;
+    perspective: 1000px;
+    margin-top: 10px; /* Add some spacing below the nav bar */
+}
+
+#flipbook {
+    display: flex;
+    width: 80%;
+    max-width: 80%;
+}
+
+.page {
+    width: auto;
+    height: 90vh;
+    position: absolute;
+    background-color: transparent;
+  
+    backface-visibility: hidden;
+    transform-origin: left center;
+    transition: transform 0.6s;
+}
+
+.flipped {
+    transform: rotateY(-180deg);
+}
+
+.control-button {
+    margin: 0 20px;
+    background-color: #ddd;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 8px;
+}
 
     
-
-
-        /* Book */
-
-        .book {
-            position: relative;
-            width: 24vw;
-            height: 46vw;
-            transition: transform 0.5s;
-            flex-wrap: wrap;
-            display: flex;
-            z-index: 5;
-            margin: auto;
-            /* Center the book horizontally */
-            margin-top: 5vh;
-            position: relative;
-            /* Relative positioning for button placement */
-        }
-
-        .paper {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            perspective: 1500px;
-        }
-
-        .front,
-        .back {
-            background-color: white;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            transform-origin: left;
-            transition: transform 0.5s;
-        }
-
-        .front {
-            z-index: 1;
-            backface-visibility: hidden;
-            -left: 3px solid powderblue;
-        }
-
-        .back {
-            z-index: 0;
-        }
-
-        .front-content,
-        .back-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .back-content {
-            transform: rotateY(180deg)
-        }
-
-        /* Paper flip effect */
-
-        .flipped .front,
-        .flipped .back {
-            transform: rotateY(-180deg);
-        }
-
-
-
-        /* Paper stack order */
-
-        #p1 {
-            z-index: 14;
-        }
-
-        #p2 {
-            z-index: 13;
-        }
-
-        #p3 {
-            z-index: 12;
-        }
-
-        #p4 {
-            z-index: 11;
-        }
-
-        #p5 {
-            z-index: 10;
-        }
-
-        #p6 {
-            z-index: 9;
-        }
-
-        #p7 {
-            z-index: 8;
-        }
-
-        #p8 {
-            z-index: 7;
-        }
-
-        #p9 {
-            z-index: 6;
-        }
-
-        #p10 {
-            z-index: 5;
-        }
-
-        #p11 {
-            z-index: 4;
-        }
-
-        #p12 {
-            z-index: 3;
-        }
-
-        #p13 {
-            z-index: 2;
-        }
-
-        #p14 {
-            z-index: 1;
-        }
-
-
-
-        .pseudo-iframe {
-
-
-            border: 1px solid #ccc;
-            /* iFrame-like border */
-            overflow: auto;
-            /* Scrollbar if content overflows */
-            position: relative;
-            /* Positioning context for the content */
-            background: grey;
-            /* Background color to mimic an iframe's default styling */
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            /* Optional: adds shadow for depth */
-        }
-
-        .iframe-content {
-            padding: 20px;
-            /* Padding around the content */
-            height: 190%;
-            /* Full height of the container */
-        }
     </style>
 </head>
-
 <body>
 
-    <div class="topnav">
-        <button id="prev-btn" class="control-button" style="margin:20px;">Previous Page </button>
-        <button id="next-btn" class="control-button">Next Page</button>
+<div class="topnav">
+    <button id="prev-btn" class="control-button">Previous Page</button>
+    <button id="next-btn" class="control-button">Next Page</button>
+    <label for="zoom-slider">Zoom:</label>
+    <input type="range" id="zoom-slider" min="50" max="600" value="100">
+</div>
 
-        <label for="zoom-slider">Zoom:</label>
-        <input type="range" id="zoom-slider" min="50" max="600" value="100">
+<div id="container">
+    <div id="flipbook-container">
+        <div id="flipbook">
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881364983_f40d2d1e89_c.jpg" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881467334_d3ef46847c_c.jpg" alt="pg-2" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881364973_836376caf9_c.jpg" alt="pg-3" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881364998_6ddf12c5fc_c.jpg" alt="pg-4" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365058_29bd51eef7_c.jpg" alt="pg-5" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53880227822_283e158857_c.jpg" alt="pg-6" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365028_001b0b6507_c.jpg" alt="pg-7" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53880227847_3f8395f40b_c.jpg" alt="pg-8" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365088_81c2d5677e_c.jpg" alt="pg-9" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53880227907_75cb011d0c_c.jpg" alt="pg-10" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365113_b8d9ef9c15_c.jpg" alt="pg-11" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881467429_df2a9ea072_c.jpg" alt="pg-12" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881467434_c156cb90a4_c.jpg" alt="pg-13" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881467444_b99db11de1_c.jpg" alt="pg-14" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881541890_316f60c8bd_c.jpg" alt="pg-15" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881467474_37434e48f9_c.jpg" alt="pg-16" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881126111_82ffc30fef_c.jpg" alt="pg-17" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881541925_f6732f7a83_c.jpg" alt="pg-18" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881541900_a68009bcef_c.jpg" alt="pg-19" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365168_9193f2f726_c.jpg" alt="pg-20" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365178_468f6d0e6a_c.jpg" alt="pg-21" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365188_b992a78443_c.jpg" alt="pg-22" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881126176_a0919f2aee_c.jpg" alt="pg-23" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365203_86f588fe42_c.jpg" alt="pg-24" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365238_aabbeff524_c.jpg" alt="pg-25" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881126211_73f5843f83_c.jpg" alt="pg-26" style="height:90%;" /></div>
+            <div class="page"><img src="https://live.staticflickr.com/65535/53881365248_975e56e53d_c.jpg" alt="pg-27" style="height:90%;" /></div>
+
+        </div>
     </div>
-    </div>
-
-
-    <div class="pseudo-iframe">
-        <div class="iframe-content">
-            <!-- Embed your content here -->
-
-            <div id="pannable-container">
-
-                <div id="pannable-content">
-
-                    <div class="container">
-
-                        <!-- Book -->
-
-                        <div id="book" class="book">
-                                                                           <!-- Paper 1 -->
-
-                            <div id="p1" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f1" class="front-content">
-
-                                        <img src="https://i.ibb.co/Wy2DPbJ/Water-on-the-Farm-Page-01.png"
-                                            style="height:95%; width: 100%;" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b1" class="back-content">
-
-                                        <img src="https://i.ibb.co/ZcwNkqS/Farmers-Grow-Special-Crops-ENGLISH-Page-02.png" alt="pg-2"
-                                            style="height:95%; width: 100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- Paper 2 -->
-
-                            <div id="p2" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f2" class="front-content">
-
-                                        <img src="https://i.ibb.co/6YhHQv4/Water-on-the-Farm-Page-03.png" alt="pg-3"
-                                            style="height:95%; width: 100%;" loading="lazy" >
-
-                                    </div>
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b2" class="back-content">
-                                        <img src="https://i.ibb.co/8PTwmfS/Water-on-the-Farm-Page-04.png" alt="pg-4"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- Paper 3 -->
-
-                            <div id="p3" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f3" class="front-content">
-
-                                        <img src="https://i.ibb.co/chWdWBw/Water-on-the-Farm-Page-05.png" alt="pg-5"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b3" class="back-content">
-
-                                        <img src="https://i.ibb.co/R4HDtBw/Water-on-the-Farm-Page-06.png" alt="pg-6"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- Paper 4 -->
-
-                            <div id="p4" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f4" class="front-content">
-
-                                        <img src="https://i.ibb.co/2gFyZLZ/Water-on-the-Farm-Page-07.png" alt="pg-7"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b4" class="back-content">
-
-                                        <img src="https://i.ibb.co/vhfy4Zv/Water-on-the-Farm-Page-08.png" alt="pg-8"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- Paper 5 -->
-
-                            <div id="p5" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f5" class="front-content">
-
-                                        <img src="https://i.ibb.co/Kwt4yNF/Water-on-the-Farm-Page-09.png" alt="pg-9"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b5" class="back-content">
-
-                                        <img src="https://i.ibb.co/hDN8gSc/Water-on-the-Farm-Page-10.png" alt="pg-10"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!-- Paper 6 -->
-                            <div id="p6" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f6" class="front-content">
-
-                                        <img src="https://i.ibb.co/6RT3J9t/Water-on-the-Farm-Page-11.png" alt="pg-11"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b6" class="back-content">
-
-                                        <img src="https://i.ibb.co/3SkwDhv/Water-on-the-Farm-Page-12.png" alt="pg-12"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!-- Paper 7 -->
-                            <div id="p7" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f7" class="front-content">
-
-                                        <img src="https://i.ibb.co/7RVFZH4/Water-on-the-Farm-Page-13.png" alt="pg-13"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b7" class="back-content">
-
-                                        <img src="https://i.ibb.co/S71pFKQ/Water-on-the-Farm-Page-14.png" alt="pg-14"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- Paper 8 -->
-                            <div id="p8" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f8" class="front-content">
-
-                                        <img src="https://i.ibb.co/mq85p8Y/Water-on-the-Farm-Page-15.png" alt="pg-15"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b8" class="back-content">
-
-                                        <img src="https://i.ibb.co/bdYG2sr/Water-on-the-Farm-Page-16.png" alt="pg-16"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!-- Paper 9 -->
-                            <div id="p9" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f9" class="front-content">
-
-                                        <img src="https://i.ibb.co/b3pdW0h/Water-on-the-Farm-Page-17.png" alt="pg-17"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b9" class="back-content">
-
-                                        <img src="https://i.ibb.co/FqpKBJY/Water-on-the-Farm-Page-18.png" alt="pg-18"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!--page 10-->
-                            <div id="p10" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f10" class="front-content">
-
-                                        <img src="https://i.ibb.co/nkrfMcB/Water-on-the-Farm-Page-19.png" alt="pg-19"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b10" class="back-content">
-
-                                        <img src="https://i.ibb.co/r7j3KNr/Water-on-the-Farm-Page-20.png" alt="pg-20"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!--page 11-->
-                            <div id="p11" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f11" class="front-content">
-
-                                        <img src="https://i.ibb.co/tQh3DDb/Water-on-the-Farm-Page-21.png" alt="pg-21"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b11" class="back-content">
-
-                                        <img src="https://i.ibb.co/02vf3vj/Water-on-the-Farm-Page-22.png" alt="pg-22"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!--page 12-->
-                            <div id="p12" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f12" class="front-content">
-
-                                        <img src="https://i.ibb.co/gjH0h9f/Water-on-the-Farm-Page-23.png" alt="pg-23"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b12" class="back-content">
-
-                                        <img src="https://i.ibb.co/gDFZDwr/Water-on-the-Farm-Page-24.png" alt="pg-24"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!--page13-->
-                            <div id="p13" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f13" class="front-content">
-
-                                        <img src="https://i.ibb.co/RcK90fT/Water-on-the-Farm-Page-25.png" alt="pg-25"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b13" class="back-content">
-
-                                        <img src="https://i.ibb.co/ZH0wJvf/Water-on-the-Farm-Page-26.png" alt="pg-26"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <!--page14-->
-                            <div id="p14" class="paper">
-
-                                <div class="front">
-
-                                    <div id="f14" class="front-content">
-
-                                        <img src="https://i.ibb.co/fdqbdpH/Water-on-the-Farm-Page-27.png" alt="pg-27"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                                <div class="back">
-
-                                    <div id="b13" class="back-content">
-
-                                        <img src="https://i.ibb.co/C8KJNXG/Water-on-the-Farm-Page-28.png" alt="pg-28"
-                                            style="height:95%;width:100%;" loading="lazy" >
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            
-                        
-
-                         
-                            
-                            
-<!--page 12-->
-
-<!--page13-->
-
-<!--page14-->
-
-<!--page15-->
-<!--page15-->
-
-                            <!--page16-->
-                            <!--page17-->
-                            <!--page18-->
-                            <!--page19-->
-                            <!--page20-->
-
-
-
-
-
-
-
-
-                            <!--end-->
-
-
-
-                        </div>
-
-                    </div>
-
-
-
-
-
-
-                    <!-- You can place any content here just like inside an actual iframe -->
-
-
-</body>
-
-</html>
-
-
-
-
+</div>
 
 <script>
-    // References to DOM Elements 
-    const prevBtn = document.querySelector("#prev-btn");
-    const nextBtn = document.querySelector("#next-btn");
-    const book = document.querySelector("#book");
-    const papers = Array.from(document.querySelectorAll(".paper"));
-    const pannableContent = document.getElementById('pannable-content');
-    const zoomSlider = document.getElementById('zoom-slider');
+    let currentPage = 0;
+    const pages = document.querySelectorAll('.page');
+    const totalPages = pages.length;
+    const flipbook = document.getElementById('flipbook');
 
-    // Variables for panning and zooming 
+    // Set initial z-index values for each page
+    pages.forEach((page, index) => {
+        page.style.zIndex = totalPages - index;
+    });
+
+    function flipToPage(pageNumber) {
+        if (pageNumber > currentPage) {
+            for (let i = currentPage; i < pageNumber; i++) {
+                pages[i].classList.add('flipped');
+            }
+        } else if (pageNumber < currentPage) {
+            for (let i = currentPage - 1; i >= pageNumber; i--) {
+                pages[i].classList.remove('flipped');
+            }
+        }
+        currentPage = pageNumber;
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+        if (currentPage > 0) {
+            flipToPage(currentPage - 1);
+        }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+            flipToPage(currentPage + 1);
+        }
+    });
+
+    // Zoom and Pan Functionality
+    const zoomSlider = document.getElementById('zoom-slider');
     let zoomFactor = 1;
-    let panX = 0;
-    let panY = 0;
-    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function updateZoom() {
+        const transform = `scale(${zoomFactor}) translate(${offsetX}px, ${offsetY}px)`;
+        flipbook.style.transform = transform;
+    }
+
+    zoomSlider.addEventListener('input', () => {
+        zoomFactor = zoomSlider.value / 100;
+        updateZoom();
+    });
+
+    // Add panning functionality for mouse events
+    let isPanning = false;
     let startX = 0;
     let startY = 0;
 
-    // Variables for book navigation 
-    let currentLocation = 1;
-    const numOfPapers = papers.length;
-    const maxLocation = numOfPapers + 1;
-
-    // Event Listener for zoom control 
-    zoomSlider.addEventListener('input', () => {
-        zoomFactor = zoomSlider.value / 100;
-        updateZoomPan();
+    flipbook.addEventListener('mousedown', (e) => {
+        isPanning = true;
+        startX = e.clientX - offsetX;
+        startY = e.clientY - offsetY;
     });
 
-    // Function to apply zoom and pan 
-    function updateZoomPan() {
-        pannableContent.style.transform = `scale(${zoomFactor}) translate(${panX}px, ${panY}px)`;
-        if (isDragging) {
-            requestAnimationFrame(updateZoomPan);
+    document.addEventListener('mousemove', (e) => {
+        if (isPanning) {
+            offsetX = e.clientX - startX;
+            offsetY = e.clientY - startY;
+            updateZoom();
         }
-    }
-
-    // Select all image elements
-    const images = document.querySelectorAll('img[data-src]'); // Ensure your images have "data-src" attribute instead of "src"
-
-    function preloadImage(img) {
-        const src = img.getAttribute("data-src");
-        if (!src) return;
-        img.src = src;
-    }
-
-    const imgObserver = new IntersectionObserver((entries, imgObserver) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            preloadImage(entry.target);
-            imgObserver.unobserve(entry.target);
-        });
-    }, { threshold: 0.5 });
-
-    images.forEach(img => {
-        imgObserver.observe(img);
     });
 
-    // Initial update for zoom and pan 
-    updateZoomPan();
-
-    // Mouse and Touch events for dynamic panning
-    function startInteraction(startXCoord, startYCoord) {
-        isDragging = true;
-        startX = startXCoord - panX;
-        startY = startYCoord - panY;
-        updateZoomPan();
-    }
-
-    function moveInteraction(xCoord, yCoord) {
-        if (!isDragging) return;
-        panX = xCoord - startX;
-        panY = yCoord - startY;
-        updateZoomPan();
-    }
-
-    function endInteraction() {
-        isDragging = false;
-    }
-
-    pannableContent.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // Prevent default action
-        startInteraction(e.clientX, e.clientY);
-        pannableContent.style.cursor = 'grabbing';
+    document.addEventListener('mouseup', () => {
+        isPanning = false;
     });
 
-    pannableContent.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) return; // Prevent touchstart for panning if zooming
-        e.preventDefault();
+    // Add panning functionality for touch events
+    let isTouchPanning = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    flipbook.addEventListener('touchstart', (e) => {
+        isTouchPanning = true;
         const touch = e.touches[0];
-        startInteraction(touch.clientX, touch.clientY);
+        touchStartX = touch.clientX - offsetX;
+        touchStartY = touch.clientY - offsetY;
     });
 
-    document.addEventListener('mousemove', (e) => moveInteraction(e.clientX, e.clientY));
-    document.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2) return; // Prevent touchmove for panning if zooming
-        const touch = e.touches[0];
-        moveInteraction(touch.clientX, touch.clientY);
-        e.preventDefault();
+    flipbook.addEventListener('touchmove', (e) => {
+        if (isTouchPanning) {
+            const touch = e.touches[0];
+            offsetX = touch.clientX - touchStartX;
+            offsetY = touch.clientY - touchStartY;
+            updateZoom();
+        }
     });
 
-    document.addEventListener('mouseup', endInteraction);
-    document.addEventListener('touchend', endInteraction);
-
-    // Event Listeners for navigation buttons 
-    prevBtn.addEventListener("click", goPrevPage);
-    nextBtn.addEventListener("click", goNextPage);
-
-    // Functions for page flipping 
-    function openBook() {
-        book.style.transform = "translateX(50%)";
-        prevBtn.style.transform = "translateX(0px)";
-        nextBtn.style.transform = "translateX(0px)";
-    }
-
-    function closeBook(isAtBeginning) {
-        book.style.transform = isAtBeginning ? "translateX(0%)" : "translateX(0%)";
-        prevBtn.style.transform = "translateX(0px)";
-        nextBtn.style.transform = "translateX(0px)";
-    }
-
-    function goNextPage() {
-        if (currentLocation < maxLocation) {
-            // Open book for first page
-            if (currentLocation === 1) {
-                openBook();
-            }
-
-            // Turn page
-            papers[currentLocation - 1].classList.add("flipped");
-            papers[currentLocation - 1].style.zIndex = currentLocation;
-
-            // Close book for last page
-            if (currentLocation === numOfPapers) {
-                closeBook(false);
-            }
-
-            currentLocation++;
-        }
-    }
-
-    function goPrevPage() {
-        if (currentLocation > 1) {
-            currentLocation--;
-
-            // If moving back from the last page
-            if (currentLocation === numOfPapers) {
-                openBook();
-            }
-
-            // If moving back to the first page
-            if (currentLocation === 1) {
-                closeBook(true);
-            }
-
-            // Turn page back
-            papers[currentLocation - 1].classList.remove("flipped");
-            papers[currentLocation - 1].style.zIndex = numOfPapers - currentLocation + 1;
-        }
-    }
-
-    // Zoom functionality for touch devices
-    document.addEventListener('DOMContentLoaded', function () {
-        const zoomableContent = document.getElementById('pannable-content'); // Make sure you refer to the correct element
-        let initialDistance = null;
-        let scale = 1;
-
-        function getDistance(touches) {
-            const [touch1, touch2] = touches;
-            const dx = touch1.pageX - touch2.pageX;
-            const dy = touch1.pageY - touch2.pageY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        function scaleContent(newScale) {
-            zoomFactor = newScale; // Update zoomFactor to maintain consistency
-            updateZoomPan();
-        }
-
-        zoomableContent.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 2) { // Check for two fingers
-                e.preventDefault();
-                initialDistance = getDistance(e.touches);
-            }
-        });
-
-        zoomableContent.addEventListener('touchmove', function (e) {
-            if (e.touches.length === 2 && initialDistance) {
-                e.preventDefault();
-                const currentDistance = getDistance(e.touches);
-                const ratio = currentDistance / initialDistance;
-                const newScale = scale * ratio;
-                scaleContent(newScale);
-            }
-        });
-
-        zoomableContent.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) {
-                scale = zoomFactor; // Save the current scale
-                initialDistance = null; // Reset initial distance
-            }
-        });
+    flipbook.addEventListener('touchend', () => {
+        isTouchPanning = false;
     });
+
+    // Initial update for zoom
+    updateZoom();
 </script>
+</body>
+</html>
