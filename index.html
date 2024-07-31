@@ -69,7 +69,7 @@
     width: auto;
     height: 90vh;
     position: absolute;
-    background-color: white;
+
     backface-visibility: hidden;
     transform-origin: left center;
     transition: transform 0.6s;
@@ -91,6 +91,29 @@
 .page img {
             border: 5px solid #000; /* Add a black border around each image */
             height: 90%;
+}
+
+.pseudo-iframe {
+
+
+border: 1px solid #ccc;
+/* iFrame-like border */
+overflow: auto;
+/* Scrollbar if content overflows */
+position: relative;
+/* Positioning context for the content */
+background: grey;
+/* Background color to mimic an iframe's default styling */
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+/* Optional: adds shadow for depth */
+}
+
+.iframe-content {
+padding: 20px;
+/* Padding around the content */
+height: 190%;
+/* Full height of the container */
+}
            
 
     
@@ -104,6 +127,8 @@
     <label for="zoom-slider">Zoom:</label>
     <input type="range" id="zoom-slider" min="50" max="600" value="100">
 </div>
+<div class="pseudo-iframe">
+    <div class="iframe-content">
 
 <div id="container">
     <div id="flipbook-container">
@@ -138,6 +163,8 @@
 
         </div>
     </div>
+</div>
+</div>
 </div>
 
 <script>
